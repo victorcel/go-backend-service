@@ -38,13 +38,13 @@ func main() {
 		log.Fatalf(err.Error())
 	}
 
-	dbPostGres, err := databases.NewPostgres(db)
+	dbPostgres, err := databases.NewPostgres(db)
 
 	if err != nil {
 		log.Fatalf(err.Error())
 	}
 
-	repository.SetEnergyMeterRepository(dbPostGres)
+	repository.SetEnergyMeterRepository(dbPostgres)
 
 	// create a listener on TCP port
 	lis, err := net.Listen("tcp", ":"+os.Getenv("GO_BACKEND_SERVICE_PORT"))
