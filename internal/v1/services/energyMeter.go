@@ -1,4 +1,4 @@
-package energyMeter
+package services
 
 import (
 	"context"
@@ -6,7 +6,7 @@ import (
 	energyMeterApiv1 "github.com/victorcel/proto-enertbit-grpc-models/pkg/v1/services/rest_config"
 )
 
-var errorPath = "ERR internal/energyMeter/energyMeter.go"
+var errorPath = "ERR internal/services/services.go"
 
 type EnergyMetersServer struct {
 	energyMeterApiv1.EnergyMetersServicesServer
