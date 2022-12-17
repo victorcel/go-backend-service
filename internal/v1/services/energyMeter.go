@@ -22,7 +22,7 @@ func (EnergyMetersServer) GetEnergyMeters(_ context.Context, meter *energyMeterA
 
 }
 
-func (EnergyMetersServer) CreateEnergyMeters(ctx context.Context, meter *energyMeterApiv1.RequestEnergyMeter) (*energyMeterApiv1.ResponseEnergyMeter, error) {
+func (EnergyMetersServer) CreateEnergyMeters(_ context.Context, meter *energyMeterApiv1.RequestEnergyMeter) (*energyMeterApiv1.ResponseEnergyMeter, error) {
 	_, err := useCases.Insert(meter.EnergyMeter)
 
 	if err != nil {
@@ -37,14 +37,17 @@ func (EnergyMetersServer) CreateEnergyMeters(ctx context.Context, meter *energyM
 	return response, nil
 }
 
-func (EnergyMetersServer) UpdateEnergyMeters(ctx context.Context, meters *energyMeterApiv1.RequestUpdateEnergyMeters) (*energyMeterv1.BoolResponse, error) {
-	//TODO implement me
-	panic("implement me")
+func (EnergyMetersServer) UpdateEnergyMeters(_ context.Context, meters *energyMeterApiv1.RequestUpdateEnergyMeters) (*energyMeterv1.BoolResponse, error) {
+	return useCases.Update(meters.GetIdRequest(), meters.GetEnergyMeter())
 }
 
 func (EnergyMetersServer) DeleteEnergyMeters(ctx context.Context, request *energyMeterv1.IdRequest) (*energyMeterv1.BoolResponse, error) {
-	//TODO implement me
-	panic("implement me")
+	db, err := useCases.Delete(request.GetId())
+
+	if err != nil {
+		return &energyMeterv1.BoolResponse{Response: db}, err
+	}
+	return &energyMeterv1.BoolResponse{Response: db}, nil
 }
 
 func (EnergyMetersServer) InstalledCutOrInactiveEnergyMeter(_ context.Context, meter *energyMeterApiv1.RequestEnergyMeter) (*energyMeterApiv1.ResponseGetEnergyMeters, error) {
