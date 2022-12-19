@@ -1,0 +1,1 @@
+create database energy_meters;
