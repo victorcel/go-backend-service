@@ -7,9 +7,16 @@ import (
 
 type EnergyMeterRepository interface {
 	Insert(meters *energyMeterv1.EnergyMeters) (*energyMeterApiv1.ResponseEnergyMeter, error)
-	Find(meters *energyMeterv1.EnergyMeters) (*energyMeterApiv1.ResponseGetEnergyMeters, error)
+	Find(meter *energyMeterv1.EnergyMeters) (*energyMeterApiv1.ResponseGetEnergyMeters, error)
 	Delete(id string) (bool, error)
 	Update(id *energyMeterv1.IdRequest, meter *energyMeterv1.EnergyMeters) (*energyMeterv1.BoolResponse, error)
+	Get() (*energyMeterApiv1.ResponseGetEnergyMeters, error)
+	InstalledCutOrInactive() (*energyMeterApiv1.ResponseGetEnergyMeters, error)
+	RecentInstallationEnergyMeter(
+		meter *energyMeterApiv1.RequestEnergyMeter,
+	) (
+		*energyMeterApiv1.ResponseEnergyMeter, error,
+	)
 }
 
 var implementationEnergyMeter EnergyMeterRepository
@@ -30,6 +37,20 @@ func Delete(id string) (bool, error) {
 	return implementationEnergyMeter.Delete(id)
 }
 
-func Find(meters *energyMeterv1.EnergyMeters) (*energyMeterApiv1.ResponseGetEnergyMeters, error) {
-	return implementationEnergyMeter.Find(meters)
+func Find(meter *energyMeterv1.EnergyMeters) (*energyMeterApiv1.ResponseGetEnergyMeters, error) {
+	return implementationEnergyMeter.Find(meter)
+}
+
+func Get() (*energyMeterApiv1.ResponseGetEnergyMeters, error) {
+	return implementationEnergyMeter.Get()
+}
+
+func InstalledCutOrInactive() (*energyMeterApiv1.ResponseGetEnergyMeters, error) {
+	return implementationEnergyMeter.InstalledCutOrInactive()
+}
+
+func RecentInstallationEnergyMeter(
+	meter *energyMeterApiv1.RequestEnergyMeter,
+) (*energyMeterApiv1.ResponseEnergyMeter, error) {
+	return implementationEnergyMeter.RecentInstallationEnergyMeter(meter)
 }

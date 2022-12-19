@@ -52,7 +52,7 @@ func main() {
 		log.Fatalf("failed to listen: %v", err)
 	}
 
-	fmt.Print("Run Server: " + os.Getenv("GO_BACKEND_SERVICE_PORT"))
+	fmt.Println("Run Server: " + os.Getenv("GO_BACKEND_SERVICE_PORT"))
 
 	// create a gRPC server object
 	grpcServer := grpc.NewServer()

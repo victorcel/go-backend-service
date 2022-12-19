@@ -72,18 +72,27 @@ func (p *Postgres) Insert(meter *energyMeterv1.EnergyMeters) (*energyMeterApiv1.
 
 }
 
-func (p *Postgres) Update(id *energyMeterv1.IdRequest, meter *energyMeterv1.EnergyMeters) (*energyMeterv1.BoolResponse, error) {
+func (p *Postgres) Update(
+	id *energyMeterv1.IdRequest, meter *energyMeterv1.EnergyMeters,
+) (*energyMeterv1.BoolResponse, error) {
 
 	if id.GetId() == "" {
 		return &energyMeterv1.BoolResponse{Response: false}, status.Error(codes.NotFound, "No existe ID")
 	}
+
+	find := p.db.Where("id = ?", id.GetId())
+
+	if find.Error != nil {
+		return &energyMeterv1.BoolResponse{Response: false}, status.Error(codes.Internal, find.Error.Error())
+	}
+
 	if meter.GetRetirementDate() != "" {
 		parseRetirementDateDate, error := time.Parse("02/01/2006 15:04", meter.GetRetirementDate())
 		if error != nil {
 			return &energyMeterv1.BoolResponse{Response: false}, status.Error(codes.NotFound, error.Error())
 		}
 
-		update := p.db.Update(id.GetId(), &EnergyMeters{
+		update := find.Update(id.GetId(), &EnergyMeters{
 			Address:        meter.GetAddress(),
 			RetirementDate: parseRetirementDateDate.Unix(),
 			Lines:          int(meter.GetLines()),
@@ -96,7 +105,7 @@ func (p *Postgres) Update(id *energyMeterv1.IdRequest, meter *energyMeterv1.Ener
 
 	}
 
-	update := p.db.Where("id = ?", id.GetId()).Updates(&EnergyMeters{
+	update := find.Updates(&EnergyMeters{
 		Address:  meter.GetAddress(),
 		Lines:    int(meter.GetLines()),
 		IsActive: meter.GetIsActive(),
@@ -109,8 +118,16 @@ func (p *Postgres) Update(id *energyMeterv1.IdRequest, meter *energyMeterv1.Ener
 	return &energyMeterv1.BoolResponse{Response: true}, nil
 }
 
-func (p *Postgres) Get() {
+func (p *Postgres) Get() (*energyMeterApiv1.ResponseGetEnergyMeters, error) {
+	var response = &energyMeterApiv1.ResponseGetEnergyMeters{}
 
+	find := p.db.Where(&EnergyMeters{}).Find(&response.EnergyMeter)
+
+	if find.Error != nil {
+		return nil, status.Error(codes.NotFound, find.Error.Error())
+	}
+
+	return response, nil
 }
 
 func (p *Postgres) Delete(id string) (bool, error) {
@@ -124,11 +141,11 @@ func (p *Postgres) Delete(id string) (bool, error) {
 	return true, nil
 }
 
-func (p *Postgres) Find(meters *energyMeterv1.EnergyMeters) (*energyMeterApiv1.ResponseGetEnergyMeters, error) {
+func (p *Postgres) Find(meter *energyMeterv1.EnergyMeters) (*energyMeterApiv1.ResponseGetEnergyMeters, error) {
 
 	var response = &energyMeterApiv1.ResponseGetEnergyMeters{}
 
-	find := p.db.Where(meters).Find(&response.EnergyMeter)
+	find := p.db.Where(meter).Find(&response.EnergyMeter)
 
 	if find.Error != nil {
 		return nil, status.Error(codes.NotFound, find.Error.Error())
@@ -137,10 +154,37 @@ func (p *Postgres) Find(meters *energyMeterv1.EnergyMeters) (*energyMeterApiv1.R
 	return response, nil
 }
 
-func (p *Postgres) InstalledCutOrInactive() {
+func (p *Postgres) InstalledCutOrInactive() (*energyMeterApiv1.ResponseGetEnergyMeters, error) {
+	var response = &energyMeterApiv1.ResponseGetEnergyMeters{}
 
+	find := p.db.
+		Model(&EnergyMeters{}).
+		Where("installation_date > 0  and is_active  = false").
+		Find(&response.EnergyMeter)
+
+	if find.Error != nil {
+		return nil, status.Error(codes.NotFound, find.Error.Error())
+	}
+
+	return response, nil
 }
 
-func (p *Postgres) RecentInstallationEnergyMeter() {
+func (p *Postgres) RecentInstallationEnergyMeter(
+	meter *energyMeterApiv1.RequestEnergyMeter,
+) (*energyMeterApiv1.ResponseEnergyMeter, error) {
 
+	var response = &energyMeterApiv1.ResponseEnergyMeter{}
+
+	find := p.db.
+		Model(&EnergyMeters{}).
+		Where(&EnergyMeters{Serial: meter.GetEnergyMeter().GetSerial(), Brand: meter.GetEnergyMeter().GetBrand()}).
+		Order("installation_date desc").
+		Limit(1).
+		Find(&response.EnergyMeter)
+
+	if find.Error != nil {
+		return nil, status.Error(codes.NotFound, find.Error.Error())
+	}
+
+	return response, nil
 }
