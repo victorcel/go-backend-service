@@ -54,6 +54,10 @@ func Insert(meters *energyMeterv1.EnergyMeters) (*energyMeterApiv1.ResponseEnerg
 
 }
 
+func Get() (*energyMeterApiv1.ResponseGetEnergyMeters, error) {
+	return repository.Get()
+}
+
 func Update(id *energyMeterv1.IdRequest, meter *energyMeterv1.EnergyMeters) (*energyMeterv1.BoolResponse, error) {
 	return repository.Update(id, meter)
 }
@@ -82,4 +86,12 @@ func Delete(id string) (bool, error) {
 	}
 
 	return responseDelete, nil
+}
+
+func InstalledCutOrInactiveEnergyMeter() (*energyMeterApiv1.ResponseGetEnergyMeters, error) {
+	return repository.InstalledCutOrInactive()
+}
+
+func RecentInstallationEnergyMeter(meter *energyMeterApiv1.RequestEnergyMeter) (*energyMeterApiv1.ResponseEnergyMeter, error) {
+	return repository.RecentInstallationEnergyMeter(meter)
 }
