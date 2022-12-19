@@ -23,7 +23,7 @@ endif
 help:
 	@echo "${PURPLE}"
 	@echo ------------------------------------------------------------
-	@echo .: Amaris Consulting:. - HELP - SHOW ALL COMMANDS
+	@echo .: Cidenet :. - HELP - SHOW ALL COMMANDS
 	@echo ------------------------------------------------------------
 	@echo ""${GREEN}""
 

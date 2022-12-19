@@ -39,6 +39,7 @@ Se debe sacar copia del archivo .env.example o correr el comando make build
 ## App Development
 
 Este proyecto fue desarrollado GO Y GRPC se deja habilitada la opcion para realizar las pruebas con el postman. 
+![img.png](doc/img/img.png)
 
 ## Authors
 
